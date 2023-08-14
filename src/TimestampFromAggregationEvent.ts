@@ -35,7 +35,7 @@ async function get_timestamp_from_event(resource: string) {
             sources: [store]
         });
         binding_stream.on('data', async (binding: any) => {
-            return binding.get('timestamp').value;
+            console.log(binding.get('timestamp').value);
         })
     });
 }
