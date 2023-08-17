@@ -1,5 +1,6 @@
 const program = require('commander');
-import { LDESinLDP, LDPCommunication } from "@treecg/versionawareldesinldp";
+import { LDESinLDP, LDPCommunication} from "@treecg/versionawareldesinldp";
+
 
 program
     .version('1.0.0')
@@ -17,16 +18,22 @@ program
 
 program.parse();
 
-async function get_event_from_timestamp(timestamp: Date, ldesLocation: string) {
-    const from = (timestamp.setMilliseconds(timestamp.getMilliseconds() - 1));
-    const until = timestamp.setMilliseconds(timestamp.getMilliseconds() + 1);
+async function get_event_from_timestamp(timestamp: Date, ldesLocation: string) {    
+    const from = (timestamp.setMilliseconds(timestamp.getMilliseconds()));
+    const until = (timestamp.setMilliseconds(timestamp.getMilliseconds()));  
     const ldes_in_ldp = new LDESinLDP(ldesLocation, new LDPCommunication());
-    const event_stream = await ldes_in_ldp.readMembersSorted({
+    const event_stream = ldes_in_ldp.readMembersSorted({
         from: new Date(from),
         until: new Date(until),
         chronological: true
-    })
-    event_stream.on('data', (event: any) => {
-        console.log(event.quads);  
+    });    
+    (await event_stream).on('data', (event: any) => {        
+        let quad_list: any = []
+        for (const quad of event.quads) {
+            if (quad.predicate.value === "http://purl.org/dc/terms/source"){
+            quad_list.push(quad.object.id);
+            }
+        }
+        console.log(quad_list);
     })
 }
