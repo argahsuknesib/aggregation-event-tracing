@@ -34,7 +34,7 @@ async function trace_original_events(resource: string) {
         let resource_metadata = fetch_ld.get(resource).catch((error: any) => {
             console.log(error);
         }).then(async (resource_metadata: any) => {
-            const store = await new N3.Store(await resource_metadata.triples);
+            const store = await new N3.Store(await resource_metadata.triples);            
             const binding_stream = await myEngine.queryBindings(`
                 select ?timestamp_to ?timestamp_from where {
                     ?s <http://w3id.org/rsp/vocals-sd#endedAt> ?timestamp_to .
@@ -43,7 +43,7 @@ async function trace_original_events(resource: string) {
             `, {
                 sources: [store]
             });
-            binding_stream.on('data', async (binding: any) => {
+            binding_stream.on('data', async (binding: any) => {                
                 await get_original_events(stream, binding.get('timestamp_from').value, binding.get('timestamp_to').value);
             });
         });
@@ -53,7 +53,7 @@ async function trace_original_events(resource: string) {
 async function get_original_events(registered_stream: string, aggregation_event_window_start: Date, aggregation_event_window_end: Date) {
     const communication = new LDPCommunication();
     const ldes_in_ldp = new LDESinLDP(registered_stream, communication);
-    let aggregation_event_window_start_date = new Date(aggregation_event_window_start);
+    let aggregation_event_window_start_date = new Date(aggregation_event_window_start);    
     let aggregation_event_window_end_date = new Date(aggregation_event_window_end);
     const lil_stream = ldes_in_ldp.readAllMembers(aggregation_event_window_start_date, aggregation_event_window_end_date);
     (await lil_stream).on('data', (member: any) => {
