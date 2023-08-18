@@ -1,7 +1,6 @@
 const program = require('commander');
 import { LDESinLDP, LDPCommunication} from "@treecg/versionawareldesinldp";
 
-
 program
     .version('1.0.0')
     .name('get-event')
@@ -27,13 +26,14 @@ async function get_event_from_timestamp(timestamp: Date, ldesLocation: string) {
         until: new Date(until),
         chronological: true
     });    
-    (await event_stream).on('data', (event: any) => {        
+    (await event_stream).on('data', (event: any) => {  
         let quad_list: any = []
         for (const quad of event.quads) {
             if (quad.predicate.value === "http://purl.org/dc/terms/source"){
             quad_list.push(quad.object.id);
             }
         }
-        console.log(quad_list);
-    })
+        let json = JSON.stringify(Object.values(quad_list).join('\n'));
+        console.log(json);
+        })
 }
