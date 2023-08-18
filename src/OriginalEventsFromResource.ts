@@ -56,8 +56,12 @@ async function get_original_events(registered_stream: string, aggregation_event_
     let aggregation_event_window_start_date = new Date(aggregation_event_window_start);    
     let aggregation_event_window_end_date = new Date(aggregation_event_window_end);
     const lil_stream = ldes_in_ldp.readAllMembers(aggregation_event_window_start_date, aggregation_event_window_end_date);
+    let participant_list: any = [];
     (await lil_stream).on('data', (member: any) => {
-        console.log(member.quads[0].subject.value); 
+        participant_list.push(member.quads[0].subject.value);
+    });
+    (await lil_stream).on('end', () => {
+        console.log(JSON.stringify(participant_list));
     });
 }
 
